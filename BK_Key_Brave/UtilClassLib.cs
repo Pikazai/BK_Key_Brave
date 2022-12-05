@@ -3,6 +3,7 @@
 using Newtonsoft.Json;
 using SharpConfig;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -16,8 +17,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace Brave_Tool
 {
@@ -236,7 +239,10 @@ namespace Brave_Tool
         }
         public List<string> getProfileFolder(string pathProfile)
         {
+            IEnumerable<string> sam = new List<string>();
+
             List<string> MyList = new List<string>();
+            List<string> MyList1 = new List<string>();
             string[] directoryCount = System.IO.Directory.GetDirectories(pathProfile, "Profile *");
             if (directoryCount.Length == 0)
             {
@@ -252,8 +258,12 @@ namespace Brave_Tool
                 //MyList.Add(Convert.ToInt32(m.Value.Replace("Profile ", "")));
                 MyList.Add(m.Value);
             }
-            return MyList;
+            foreach (var x in MyList.OrderBy(s => Int32.Parse(Regex.Match(s, @" (\d*)").Groups[1].Value)))
+                //Console.WriteLine(x);
+                MyList1.Add(x);
+            return MyList1;
         }
+           
         public List<string> getProfile(string pathProfile)
         {
             string[] directoryCount = System.IO.Directory.GetDirectories(pathProfile, "*");

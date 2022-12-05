@@ -52,6 +52,8 @@ namespace BK_Key_Brave
         }
         private void Form1_Load(object sender, EventArgs e)
         {
+
+
             #region Load config
             var config = Configuration.LoadFromFile(@"Auto\Config.cfg");
             var MainConfig = config["MainConfig"];
