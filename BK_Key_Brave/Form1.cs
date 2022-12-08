@@ -123,14 +123,7 @@ namespace BK_Key_Brave
             Console.WriteLine("===========================> @Pikazai <===========================");
             Console.WriteLine("Run time: " + DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
             Console.WriteLine("");
-            string fullPathProfile = "";
             string strClaim = "";
-            //string folder = "";
-            string[] proxy;
-            string ip;
-            var rndIp = "";
-            var rand = new Random();
-            string[] proxyArr = null;
             int num1 = 0;
             string checkOpenRewardPage = "";
             string strKey = "";
@@ -164,7 +157,7 @@ namespace BK_Key_Brave
                 strProfile = "Default";
             }
             Console.WriteLine("Tong so Profile:" + listprofile.Count);
-            DialogResult dialogResult = MessageBox.Show("Tong so Profile: [" + listprofile.Count +"]");
+            DialogResult dialogResult = MessageBox.Show("Tong so Profile: [" + listprofile.Count + "]");
             #endregion
 
             for (int index = 0; index < listprofile.Count; ++index)
@@ -206,7 +199,7 @@ namespace BK_Key_Brave
                             continue;
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         //MessageBox.Show(@"Hãy chắc chắn file [skipProfile\skipBackupPrf.txt] tồn tại ?" + ex, "Đã có lỗi xảy ra",
                         //MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -261,7 +254,7 @@ namespace BK_Key_Brave
                     {
                         checkOpenRewardPage = driver.FindElement(By.XPath("//*[@id=\"modal\"]/div/div[2]/div[2]/div/div/div[1]/div[1]/div")).Text.ToString();
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         // Tìm và click "Manage your wallet"
                         try
@@ -319,7 +312,7 @@ namespace BK_Key_Brave
                         {
                             List<String> lsClaim = new List<String>(strClaim.Split("|".ToCharArray()));
                             //string tongbat = strClaim.Substring(strClaim.IndexOf("Total Bat: ")).Replace("Total Bat: ", "");
-                            strKey =strKey + "|" + lsClaim[1].Replace(":", "") + "|" + lsClaim[2].Replace(":", "");
+                            strKey = strKey + "|" + lsClaim[1].Replace(":", "") + "|" + lsClaim[2].Replace(":", "");
                         }
                         File.AppendAllText(keyoutput, listprofile[index] + "|" + strKey + Environment.NewLine);
                         // Add profile in skipBackupPrf.txt
@@ -436,9 +429,9 @@ namespace BK_Key_Brave
                     for (int index = 0; index < num; ++index)
                     {
                         Console.ForegroundColor = ConsoleColor.Green;
-                        bat = GetBATPromotion(str2);
-                        str3 = str3 + " Claimed " + (1 + index).ToString() + "|" + GetDatePromotion(str2) + "|" + bat; //+ ",";
-                        str2 = GetLastSubstring(str2, str2.Length - GetSubStringIndex(str2, "publicKeys") - 2);
+                        bat = GetBAT(str2);
+                        str3 = str3 + " Claimed " + (1 + index).ToString() + "|" + GetDate(str2) + "|" + bat; //+ ",";
+                        str2 = GetLastString(str2, str2.Length - GetStringIndex(str2, "publicKeys") - 2);
                         total = total + (Convert.ToDouble(bat.Replace(":", "")));
                     }
                     str1 = str3 + "|Total Bat: " + total;
@@ -452,8 +445,8 @@ namespace BK_Key_Brave
             return str1;
         }
         public static int CountSubString(string str, string substr) => Regex.Matches(str, substr).Count;
-        public static string GetDatePromotion(string str) => str.Substring(str.IndexOf("createdAt")).Substring(12, 10);
-        public static string GetBATPromotion(string str)
+        public static string GetDate(string str) => str.Substring(str.IndexOf("createdAt")).Substring(12, 10);
+        public static string GetBAT(string str)
         {
             string batPromotion = str.Substring(str.IndexOf("approximateValue")).Substring(19, 10);
             string[] strArray = new string[6]
@@ -469,8 +462,8 @@ namespace BK_Key_Brave
                 batPromotion = batPromotion.Replace(oldValue, string.Empty);
             return batPromotion;
         }
-        public static string GetLastSubstring(string str, int index) => str.Substring(str.Length - index);
-        public static int GetSubStringIndex(string str, string substr) => str.IndexOf(substr);
+        public static string GetLastString(string str, int index) => str.Substring(str.Length - index);
+        public static int GetStringIndex(string str, string substr) => str.IndexOf(substr);
         private void CloseDriver()
         {
 
@@ -481,7 +474,7 @@ namespace BK_Key_Brave
                     driver.Close();
                     driver.Quit();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                 }
             }
@@ -510,6 +503,7 @@ namespace BK_Key_Brave
             {
             }
         }
+
         private static Boolean isloadComplete(IWebDriver driver)
         {
             return ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("loaded")
@@ -702,12 +696,29 @@ namespace BK_Key_Brave
                 #region Save config
                 SaveConfig();
                 #endregion
+                #region Clean Log
+                try
+                {
+                    ClearFolder("Output");
+                }
+                catch (Exception)
+                {
+                    ClearFolder("Output");
+                }
+                #endregion
                 #region Init
                 Console.Clear();
                 Console.WriteLine("===========================> Check claim <===========================");
                 Console.WriteLine("Run time: " + DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
                 Console.WriteLine("");
                 List<string> lsDelete = new List<string>();
+                string checkCLaimtxt = @"Output\Check_Claim.txt";
+                if (!File.Exists(checkCLaimtxt))
+                {
+                    using (StreamWriter w = File.AppendText(checkCLaimtxt))
+                    {
+                    }
+                }
 
                 int num1 = 0;
                 int totalClaim = 0;
@@ -729,6 +740,7 @@ namespace BK_Key_Brave
                 Console.WriteLine("Tong so Profile:" + listprofile.Count);
                 string duongdanprofile = "";
                 string rootFolder = "";
+                string log = "";
 
                 for (int index = 0; index < listprofile.Count; ++index)
                 {
@@ -751,7 +763,9 @@ namespace BK_Key_Brave
                         if (Directory.Exists(duongdanprofile + @"\" + strProfile))
                         {
                             strClaim = GetClaim(duongdanprofile + @"\" + strProfile);
-                            Console.WriteLine(">" + index + ":" + rootFolder + ": " + strClaim + strBalance);
+                            log = ">" + index + ":" + rootFolder + ": " + strClaim + strBalance;
+                            Console.WriteLine(log);
+                            File.AppendAllText(checkCLaimtxt, log + Environment.NewLine);
                             if (strClaim.Contains("Claimed"))
                             {
                                 ++totalClaim;

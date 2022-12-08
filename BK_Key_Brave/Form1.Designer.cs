@@ -139,7 +139,7 @@
             // 
             // btn_Delete_Skip_File
             // 
-            this.btn_Delete_Skip_File.Location = new System.Drawing.Point(363, 209);
+            this.btn_Delete_Skip_File.Location = new System.Drawing.Point(346, 209);
             this.btn_Delete_Skip_File.Name = "btn_Delete_Skip_File";
             this.btn_Delete_Skip_File.Size = new System.Drawing.Size(116, 25);
             this.btn_Delete_Skip_File.TabIndex = 11;
