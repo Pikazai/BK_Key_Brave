@@ -36,7 +36,8 @@ namespace BK_Key_Brave
         private string chromeVersion = "This version of ChromeDriver only supports Chrome version";
         #endregion
         public Form1()
-        {;
+        {
+            ;
             System.Threading.Thread.CurrentThread.ApartmentState = System.Threading.ApartmentState.STA;
             System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
             System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
@@ -162,8 +163,8 @@ namespace BK_Key_Brave
                 listprofile = Poke.getProfile(txtProfile.Text);
                 strProfile = "Default";
             }
-            Console.WriteLine("listprofile.count:" + listprofile.Count);
-            DialogResult dialogResult = MessageBox.Show("[" + listprofile.Count + " Profile] found");
+            Console.WriteLine("Tong so Profile:" + listprofile.Count);
+            DialogResult dialogResult = MessageBox.Show("Tong so Profile: [" + listprofile.Count +"]");
             #endregion
 
             for (int index = 0; index < listprofile.Count; ++index)
@@ -228,7 +229,7 @@ namespace BK_Key_Brave
                             }
                         }
                     }
-                    
+
                     #region Set chromeOptions
                     ChromeOptions chromeOptions = new ChromeOptions();
                     chromeOptions.AddArgument("--no-sandbox");
@@ -318,9 +319,9 @@ namespace BK_Key_Brave
                         {
                             List<String> lsClaim = new List<String>(strClaim.Split("|".ToCharArray()));
                             //string tongbat = strClaim.Substring(strClaim.IndexOf("Total Bat: ")).Replace("Total Bat: ", "");
-                            strKey = strKey + "|" + lsClaim[1].Replace(":", "") + "|" + lsClaim[2].Replace(":", "");
+                            strKey =strKey + "|" + lsClaim[1].Replace(":", "") + "|" + lsClaim[2].Replace(":", "");
                         }
-                        File.AppendAllText(keyoutput, strKey + Environment.NewLine);
+                        File.AppendAllText(keyoutput, listprofile[index] + "|" + strKey + Environment.NewLine);
                         // Add profile in skipBackupPrf.txt
                         File.AppendAllText(skipBackupPrf, listprofile[index] + Environment.NewLine);
                         ++num1;
@@ -685,6 +686,105 @@ namespace BK_Key_Brave
         {
             string skipBackupPrf = @"SkipProfile\skipBackupPrf.txt";
             deletetxt(skipBackupPrf);
+        }
+
+        private void btn_check_Claim_Click(object sender, EventArgs e)
+        {
+
+            Thread StartTip = new Thread(new ParameterizedThreadStart(param => { CheckClaim(); }));
+            StartTip.SetApartmentState(ApartmentState.STA);
+            StartTip.Start();
+        }
+        private void CheckClaim()
+        {
+            Thread thread = new Thread((ThreadStart)delegate
+            {
+                #region Save config
+                SaveConfig();
+                #endregion
+                #region Init
+                Console.Clear();
+                Console.WriteLine("===========================> Check claim <===========================");
+                Console.WriteLine("Run time: " + DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
+                Console.WriteLine("");
+                List<string> lsDelete = new List<string>();
+
+                int num1 = 0;
+                int totalClaim = 0;
+                string strClaim = "";
+                string strBalance = "";
+                double tongbat = 0;
+                #endregion
+                List<string> listprofile;
+                string strProfile = "";
+                if (UserData3.Checked)
+                {
+                    listprofile = Poke.getProfileFolder(txtProfile.Text);
+                }
+                else
+                {
+                    listprofile = Poke.getProfile(txtProfile.Text);
+                    strProfile = "Default";
+                }
+                Console.WriteLine("Tong so Profile:" + listprofile.Count);
+                string duongdanprofile = "";
+                string rootFolder = "";
+
+                for (int index = 0; index < listprofile.Count; ++index)
+                {
+                    try
+                    {
+                        if (UserData1.Checked)
+                        {
+                            duongdanprofile = listprofile[index];
+                        }
+                        else if (UserData2.Checked)
+                        {
+                            duongdanprofile = listprofile[index] + @"\Brave-Browser\User Data";
+                        }
+                        else if (UserData3.Checked)
+                        {
+                            duongdanprofile = txtProfile.Text;
+                            strProfile = listprofile[index];
+                        }
+                        rootFolder = listprofile[index].ToString();
+                        if (Directory.Exists(duongdanprofile + @"\" + strProfile))
+                        {
+                            strClaim = GetClaim(duongdanprofile + @"\" + strProfile);
+                            Console.WriteLine(">" + index + ":" + rootFolder + ": " + strClaim + strBalance);
+                            if (strClaim.Contains("Claimed"))
+                            {
+                                ++totalClaim;
+                                // xử lý tính tổng bat
+                                tongbat = tongbat + (Convert.ToDouble(strClaim.Substring(strClaim.IndexOf("Total Bat: ")).Replace("Total Bat: ", "")));
+                            }
+                            Thread.Sleep(1000);
+                            ++num1;
+                        }
+
+                    }
+                    catch (Exception)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine(">" + duongdanprofile + ": Error check !");
+                        Console.ResetColor();
+                        continue;
+                    }
+                    //}
+                }
+                Console.ResetColor();
+                Console.WriteLine("--------------------------------------------------");
+                Console.WriteLine(">Profile Number found: {0}", (object)num1);
+                Console.WriteLine(">>>Total number Profile Claimed: {0}", (object)totalClaim);
+                Console.WriteLine(">>>Total Bat: {0}", (object)tongbat);
+                Console.WriteLine("End time: " + DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
+                Console.WriteLine(" ");
+                MessageBox.Show("Complete check Claim profile", "Check claim",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            });
+            thread.IsBackground = true;
+            thread.Start();
+
         }
     }
 }

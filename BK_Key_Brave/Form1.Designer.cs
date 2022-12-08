@@ -44,6 +44,7 @@
             this.chkBackupClaimed = new ComponentFactory.Krypton.Toolkit.KryptonCheckBox();
             this.kryptonLabel4 = new ComponentFactory.Krypton.Toolkit.KryptonLabel();
             this.txt_delay_bk_key = new ComponentFactory.Krypton.Toolkit.KryptonTextBox();
+            this.btn_check_Claim = new ComponentFactory.Krypton.Toolkit.KryptonButton();
             this.SuspendLayout();
             // 
             // txtProfile
@@ -138,7 +139,7 @@
             // 
             // btn_Delete_Skip_File
             // 
-            this.btn_Delete_Skip_File.Location = new System.Drawing.Point(204, 209);
+            this.btn_Delete_Skip_File.Location = new System.Drawing.Point(363, 209);
             this.btn_Delete_Skip_File.Name = "btn_Delete_Skip_File";
             this.btn_Delete_Skip_File.Size = new System.Drawing.Size(116, 25);
             this.btn_Delete_Skip_File.TabIndex = 11;
@@ -171,11 +172,21 @@
             this.txt_delay_bk_key.TabIndex = 14;
             this.txt_delay_bk_key.Text = "3500";
             // 
+            // btn_check_Claim
+            // 
+            this.btn_check_Claim.Location = new System.Drawing.Point(220, 209);
+            this.btn_check_Claim.Name = "btn_check_Claim";
+            this.btn_check_Claim.Size = new System.Drawing.Size(90, 25);
+            this.btn_check_Claim.TabIndex = 15;
+            this.btn_check_Claim.Values.Text = "Check Claim";
+            this.btn_check_Claim.Click += new System.EventHandler(this.btn_check_Claim_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(491, 276);
+            this.Controls.Add(this.btn_check_Claim);
             this.Controls.Add(this.txt_delay_bk_key);
             this.Controls.Add(this.kryptonLabel4);
             this.Controls.Add(this.chkBackupClaimed);
@@ -218,6 +229,7 @@
         private ComponentFactory.Krypton.Toolkit.KryptonCheckBox chkBackupClaimed;
         private ComponentFactory.Krypton.Toolkit.KryptonLabel kryptonLabel4;
         private ComponentFactory.Krypton.Toolkit.KryptonTextBox txt_delay_bk_key;
+        private ComponentFactory.Krypton.Toolkit.KryptonButton btn_check_Claim;
     }
 }
 
